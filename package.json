@@ -1,0 +1,20 @@
+{
+  "name": "arthaoak-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ArthaOak - luxury home & office furniture. Animated static site built with HTML, CSS, vanilla JavaScript, GSAP (ScrollTrigger) and Three.js WebGL.",
+  "homepage": "https://arthaoak.com",
+  "scripts": {
+    "dev": "npx serve@latest . -l 4173",
+    "start": "npx serve@latest . -l 4173"
+  },
+  "keywords": [
+    "arthaoak",
+    "furniture",
+    "static-site",
+    "gsap",
+    "threejs"
+  ],
+  "author": "ArthaOak Living Solutions Private Limited",
+  "license": "UNLICENSED"
+}

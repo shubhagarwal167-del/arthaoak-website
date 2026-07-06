@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# vercel
+.vercel/
+
+# OS junk
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# editor
+.vscode/
+.idea/
+
+# logs
+*.log
