@@ -15,3 +15,6 @@ desktop.ini
 
 # logs
 *.log
+
+# never ship archives with the site
+*.zip
