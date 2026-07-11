@@ -77,22 +77,21 @@
       '  vec2 q=vec2(fbm(p*1.35+t), fbm(p*1.35-t*0.7+5.2));',
       '  vec2 r=vec2(fbm(p*1.15+q*1.6+t*0.55), fbm(p*1.15+q*1.6-t*0.4+8.1));',
       '  float f=fbm(p*1.55+r*1.75);',
-      /* deep walnut dark base so light effects pop */
-      '  vec3 base=vec3(0.052,0.038,0.022);',
-      '  vec3 gold=vec3(0.82,0.60,0.21);',
-      '  vec3 coral=vec3(1.0,0.43,0.29);',
-      '  vec3 amber=vec3(1.0,0.74,0.38);',
+      /* cream ivory base with warm sand/gold fluid currents */
+      '  vec3 base=vec3(0.958,0.936,0.878);',
+      '  vec3 sand=vec3(0.885,0.795,0.600);',
+      '  vec3 gold=vec3(0.800,0.600,0.240);',
+      '  vec3 coral=vec3(0.980,0.550,0.400);',
       '  vec3 col=base;',
-      '  col=mix(col,gold*0.85,smoothstep(0.3,0.95,f)*0.8);',
-      '  col=mix(col,coral,smoothstep(0.5,1.0,q.y*f)*0.42);',
-      '  col+=gold*pow(max(f,0.0),3.0)*0.4;',
-      /* cursor-reactive glow */
+      '  col=mix(col,sand,smoothstep(0.25,0.90,f)*0.55);',
+      '  col=mix(col,gold,smoothstep(0.55,1.00,f)*0.28);',
+      '  col=mix(col,coral,smoothstep(0.60,1.05,q.y*f)*0.14);',
+      /* cursor-reactive warm glow */
       '  vec2 m=uMouse; m.x*=uRes.x/uRes.y;',
       '  float md=length(p-m);',
-      '  col+=amber*exp(-md*3.2)*0.32;',
-      /* vignette */
-      '  float vig=smoothstep(1.3,0.32,length(uv-0.5));',
-      '  col*=vig;',
+      '  col=mix(col,gold,exp(-md*3.2)*0.22);',
+      /* soft edge vignette, keeps the page airy */
+      '  col*=mix(1.0,0.94,smoothstep(0.35,1.25,length(uv-0.5)));',
       '  gl_FragColor=vec4(col,1.0);',
       '}'
     ].join('\n');
@@ -204,8 +203,8 @@
           dx = p.x - q.x; dy = p.y - q.y;
           d = dx * dx + dy * dy;
           if (d < LINK_DIST * LINK_DIST) {
-            var a = (1 - Math.sqrt(d) / LINK_DIST) * 0.16;
-            ctx.strokeStyle = 'rgba(201,150,46,' + a.toFixed(3) + ')';
+            var a = (1 - Math.sqrt(d) / LINK_DIST) * 0.12;
+            ctx.strokeStyle = 'rgba(140,100,30,' + a.toFixed(3) + ')';
             ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
           }
         }
@@ -214,10 +213,10 @@
       /* embers */
       for (i = 0; i < pts.length; i++) {
         p = pts[i];
-        var tw = 0.45 + 0.3 * Math.sin(t * 3 + p.ph);
+        var tw = 0.30 + 0.22 * Math.sin(t * 3 + p.ph);
         ctx.fillStyle = p.gold
-          ? 'rgba(212,160,52,' + tw.toFixed(3) + ')'
-          : 'rgba(255,120,80,' + (tw * 0.8).toFixed(3) + ')';
+          ? 'rgba(160,112,28,' + tw.toFixed(3) + ')'
+          : 'rgba(210,96,60,' + (tw * 0.85).toFixed(3) + ')';
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
@@ -266,6 +265,11 @@
         .from(heroWords, { y: 70, opacity: 0, rotationX: -35, duration: 0.9, stagger: 0.07 }, '-=0.2')
         .from('.hero-sub', { y: 34, opacity: 0, duration: 0.8 }, '-=0.45')
         .from('.hero-cta > *', { y: 26, opacity: 0, scale: 0.92, duration: 0.6, stagger: 0.12, ease: 'back.out(1.7)' }, '-=0.4')
+        .from('.hero-scene', { opacity: 0, y: 50, duration: 0.8 }, '-=0.75')
+        .from('.sc-frame', { y: -46, opacity: 0, rotation: -6, transformOrigin: '50% 0%', stagger: 0.12, duration: 0.6, ease: 'back.out(1.8)' }, '-=0.5')
+        .from('.sc-sofa', { y: 70, scale: 0.9, opacity: 0, transformOrigin: '50% 100%', duration: 0.7, ease: 'back.out(1.5)' }, '-=0.45')
+        .from(['.sc-table', '.sc-plant', '.sc-lamp'], { y: 46, opacity: 0, stagger: 0.1, duration: 0.55 }, '-=0.4')
+        .from('.sc-glow', { opacity: 0, duration: 0.9 }, '-=0.25')
         .from('.hero .ticker', { yPercent: -100, opacity: 0, duration: 0.6 }, '-=0.8')
         .from('.scroll-hint', { opacity: 0, duration: 0.8 }, '-=0.2')
         .from('.hero .float-sq', { scale: 0, rotation: 90, duration: 0.7, stagger: 0.1, ease: 'back.out(1.8)' }, '-=1.1');
@@ -348,6 +352,34 @@
         ease: 'sine.inOut',
         yoyo: true,
         repeat: -1
+      });
+    });
+
+    /* --- Living furniture scene: the room breathes --- */
+    if (document.querySelector('.hero-scene')) {
+      gsap.to('.sc-glow', { opacity: 0.45, duration: 2.4, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      gsap.to('.sc-plant', { rotation: 4, svgOrigin: '400 318', duration: 2.8, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      gsap.fromTo('.sc-pillow', { rotation: -8 }, { rotation: -3, transformOrigin: '50% 50%', duration: 3.2, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      gsap.utils.toArray('.sc-frame').forEach(function (fr, i) {
+        gsap.to(fr, { y: i % 2 ? 6 : -5, rotation: i % 2 ? 1.5 : -1.5, transformOrigin: '50% 0%', duration: 2.6 + i * 0.5, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      });
+      gsap.to('.hero-scene svg', { y: 8, duration: 4.2, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+    }
+  }
+
+  /* ==================== 4b. 3D TILT ON FRAMES ==================== */
+  function initTilt() {
+    if (!hasGSAP || reduceMotion) return;
+    if (window.matchMedia('(hover: none)').matches) return;
+    document.querySelectorAll('.tilt').forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width - 0.5;
+        var py = (e.clientY - r.top) / r.height - 0.5;
+        gsap.to(el, { rotationY: px * 9, rotationX: -py * 9, transformPerspective: 800, duration: 0.4, ease: 'power2.out' });
+      });
+      el.addEventListener('pointerleave', function () {
+        gsap.to(el, { rotationX: 0, rotationY: 0, duration: 0.7, ease: 'power3.out' });
       });
     });
   }
@@ -535,6 +567,7 @@
     initWebGL();
     initParticles();
     initMotion();
+    initTilt();
     initMenu();
     initModals();
   }
