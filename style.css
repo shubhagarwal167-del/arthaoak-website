@@ -847,27 +847,6 @@ main, .nav, .rail, .menu-overlay, .footer{ position:relative; z-index:3; }
 /* ============ SPLIT TEXT ============ */
 .split .word{ display:inline-block; white-space:pre; will-change:transform, opacity; }
 
-/* ============ VIDEO PLAY/PAUSE (glass control) ============ */
-.video-toggle{
-  position:fixed;
-  left:clamp(10px, 2vw, 26px);
-  bottom:clamp(12px, 2.5vh, 28px);
-  z-index:46;
-  width:46px; height:46px;
-  border-radius:50%;
-  background:var(--glass-strong);
-  backdrop-filter:blur(10px) saturate(130%);
-  -webkit-backdrop-filter:blur(10px) saturate(130%);
-  border:var(--rim);
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.55), 0 10px 26px rgba(60,42,16,.2);
-  display:grid; place-items:center;
-  cursor:pointer;
-  transition:transform .2s ease;
-}
-.video-toggle:hover{ transform:scale(1.08); }
-.video-toggle:active{ transform:scale(.95); }
-.video-toggle svg{ width:20px; height:20px; fill:var(--ink); }
-
 /* ============ TOAST ============ */
 .toast{
   position:fixed;

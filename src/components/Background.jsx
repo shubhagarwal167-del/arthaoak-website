@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 /* "Minimalist room with wooden furniture" - Mixkit Free License
    (free for commercial use, no attribution required, no copyright issues) */
@@ -9,7 +9,6 @@ const RATE = 0.75; /* slowed loop reads cinematic rather than documentary */
 
 export default function Background() {
   const videoRef = useRef(null);
-  const [playing, setPlaying] = useState(true);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -23,7 +22,7 @@ export default function Background() {
     video.playbackRate = RATE;
 
     const tryPlay = () => {
-      if (video.dataset.userPaused || !video.paused) return;
+      if (!video.paused) return;
       video.playbackRate = RATE;
       const p = video.play();
       if (p && p.catch) p.catch(() => {});
@@ -36,17 +35,15 @@ export default function Background() {
     window.addEventListener('touchstart', onFirstInput, { once: true, passive: true });
     window.addEventListener('pointerdown', onFirstInput, { once: true });
 
-    /* keep the toggle icon truthful whatever the browser decides */
-    const onPlay = () => { video.playbackRate = RATE; setPlaying(true); };
-    const onPause = () => setPlaying(false);
+    /* the film is always on: re-apply the cinematic rate on every play */
+    const onPlay = () => { video.playbackRate = RATE; };
     video.addEventListener('play', onPlay);
-    video.addEventListener('pause', onPause);
 
-    /* save battery/GPU when the tab is hidden */
+    /* save battery/GPU when the tab is hidden, resume when visible */
     const onVisibility = () => {
       if (document.hidden) {
         video.pause();
-      } else if (!video.dataset.userPaused) {
+      } else {
         tryPlay();
       }
     };
@@ -56,24 +53,9 @@ export default function Background() {
       window.removeEventListener('touchstart', onFirstInput);
       window.removeEventListener('pointerdown', onFirstInput);
       video.removeEventListener('play', onPlay);
-      video.removeEventListener('pause', onPause);
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
-
-  const toggle = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      delete video.dataset.userPaused;
-      video.playbackRate = RATE;
-      const p = video.play();
-      if (p && p.catch) p.catch(() => {});
-    } else {
-      video.dataset.userPaused = '1';
-      video.pause();
-    }
-  };
 
   return (
     <>
@@ -92,19 +74,6 @@ export default function Background() {
         aria-hidden="true"
       />
       <div className="video-scrim" aria-hidden="true" />
-      <button
-        type="button"
-        className="video-toggle"
-        onClick={toggle}
-        aria-label={playing ? 'Pause background video' : 'Play background video'}
-        title={playing ? 'Pause background' : 'Play background'}
-      >
-        {playing ? (
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="6" width="3.5" height="12" rx="1"/><rect x="13.5" y="6" width="3.5" height="12" rx="1"/></svg>
-        ) : (
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
-        )}
-      </button>
     </>
   );
 }
