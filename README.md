@@ -1,49 +1,49 @@
-# ArthaOak — Luxury Home & Office Furniture
+# ArthaOak - Luxury Home & Office Furniture
 
-Production website for **ArthaOak Living Solutions Private Limited** (Est. 2026) — [arthaoak.com](https://arthaoak.com).
+Production website for **ArthaOak Living Solutions Private Limited** (Est. 2026) - [arthaoak.com](https://arthaoak.com).
 
-A fully animated, single-page static site: cream-ivory retro-modernist design with metallic gold accents, WebGL fluid background, ember particles, scroll-driven motion and popup enquiry modals.
+A cinematic glassmorphism single-page site: a furniture-studio film runs behind the
+whole page under a cream-ivory veil, and every piece of content sits in a frosted
+glass frame with bronze rims. Fully animated at every stage.
 
 ## Stack
 
-- **HTML / CSS / vanilla JavaScript** — no build step, no framework
-- **GSAP 3 + ScrollTrigger** (CDN) — reveals, parallax, popups, scroll rail
-- **Three.js** (CDN) — domain-warped simplex-noise fluid background with cursor-reactive glow
-- **Playfair Display / Crimson Pro / Archivo Black** via Google Fonts
+- **React 18 + Vite** (Node.js toolchain, `npm run dev` / `npm run build`)
+- **GSAP 3 + ScrollTrigger** (npm) - hero intro, scroll reveals, parallax, popups, scroll rail
+- **Instrument Serif + Inter** via Google Fonts
+- Background film: Mixkit Free License (free for commercial use, no attribution required)
+
+## Interactions
+
+3D-tilting product cards, magnetic CTAs, scroll-spy navigation, pause-on-hover
+tickers, glass video play/pause control, enquiry popups with copy-to-clipboard
+toast, अ→O custom scroll rail, cursor-reactive ember particles.
 
 ## Project structure
 
 ```
-├── index.html              # the entire site (single page)
-├── style.css               # design system + responsive rules
-├── script.js               # WebGL, particles, GSAP motion, modals
-├── founder.jpg             # founder portrait
-├── favicon.ico             # + favicon-16/32, apple-touch-icon,
-├── android-chrome-*.png    #   android icons
-├── site.webmanifest        # PWA metadata
-├── robots.txt / sitemap.xml
-└── vercel.json             # security headers + clean URLs
+├── index.html              # Vite entry (meta, favicons, fonts)
+├── style.css               # the whole design system
+├── public/                 # favicons, robots.txt, sitemap.xml, webmanifest
+└── src/
+    ├── main.jsx / App.jsx  # app shell, modal + toast state
+    ├── useMotion.js        # GSAP: intro, reveals, parallax, magnetic buttons
+    ├── data/products.js    # all 14 collection cards + modal copy
+    └── components/         # Nav, Hero, Story, Collection, Contact, Modal, ...
 ```
 
 ## Run locally
 
-Open `index.html` directly in a browser, or serve it:
-
 ```bash
+npm install
 npm run dev
-# → http://localhost:4173
+# → http://localhost:5173
 ```
-
-(Requires internet — GSAP/Three.js/fonts load from CDN.)
 
 ## Deploy to Vercel
 
-1. Push this repository to GitHub.
-2. On [vercel.com](https://vercel.com) → **Add New → Project** → import this repo.
-3. Framework preset: **Other**. No build command, no output directory — accept defaults and **Deploy**.
-4. Add the custom domain **arthaoak.com** under *Project → Settings → Domains*.
-
-There are no npm dependencies to install — the site is served exactly as committed.
+Import the repo on vercel.com - Vite is auto-detected (build `npm run build`,
+output `dist`). No environment variables needed.
 
 ---
 

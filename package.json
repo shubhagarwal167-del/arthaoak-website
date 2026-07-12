@@ -1,20 +1,24 @@
 {
   "name": "arthaoak-website",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "ArthaOak - luxury home & office furniture. Animated static site built with HTML, CSS, vanilla JavaScript, GSAP (ScrollTrigger) and Three.js WebGL.",
+  "type": "module",
+  "description": "ArthaOak - luxury home & office furniture. Cinematic glassmorphism site built with React + Vite + GSAP.",
   "homepage": "https://arthaoak.com",
   "scripts": {
-    "dev": "npx serve@latest . -l 4173",
-    "start": "npx serve@latest . -l 4173"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [
-    "arthaoak",
-    "furniture",
-    "static-site",
-    "gsap",
-    "threejs"
-  ],
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.7"
+  },
   "author": "ArthaOak Living Solutions Private Limited",
   "license": "UNLICENSED"
 }

@@ -13,6 +13,9 @@ desktop.ini
 .vscode/
 .idea/
 
+# build output
+dist/
+
 # logs
 *.log
 
