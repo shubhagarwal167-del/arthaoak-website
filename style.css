@@ -69,6 +69,10 @@ a, button, .p-card{
   object-fit:cover;
   z-index:0;
   pointer-events:none;
+  /* reframe the film: zoom anchored top-right so the styling props
+     (magazines on the table edge, shelf items) stay out of frame */
+  transform:scale(1.35);
+  transform-origin:100% 5%;
 }
 /* warm ivory veil - much lighter now: the film stays clearly visible,
    glass frames carry the readability instead */
