@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from 'react';
 const VIDEO_SRC = 'https://assets.mixkit.co/videos/3091/3091-720.mp4';
 const VIDEO_POSTER = 'https://assets.mixkit.co/videos/3091/3091-thumb-1080-0.jpg';
 
+const RATE = 0.75; /* slowed loop reads cinematic rather than documentary */
+
 export default function Background() {
   const videoRef = useRef(null);
   const [playing, setPlaying] = useState(true);
@@ -12,20 +14,51 @@ export default function Background() {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    /* slow the loop slightly - reads as cinematic rather than documentary */
-    video.playbackRate = 0.75;
 
+    /* iOS/Safari autoplay needs the muted ATTRIBUTE present, which React
+       does not render from the prop - set everything imperatively */
+    video.defaultMuted = true;
+    video.muted = true;
+    video.setAttribute('muted', '');
+    video.playbackRate = RATE;
+
+    const tryPlay = () => {
+      if (video.dataset.userPaused || !video.paused) return;
+      video.playbackRate = RATE;
+      const p = video.play();
+      if (p && p.catch) p.catch(() => {});
+    };
+    tryPlay();
+
+    /* if autoplay was blocked (e.g. iOS Low Power Mode), start on the
+       first touch/click anywhere on the page */
+    const onFirstInput = () => tryPlay();
+    window.addEventListener('touchstart', onFirstInput, { once: true, passive: true });
+    window.addEventListener('pointerdown', onFirstInput, { once: true });
+
+    /* keep the toggle icon truthful whatever the browser decides */
+    const onPlay = () => { video.playbackRate = RATE; setPlaying(true); };
+    const onPause = () => setPlaying(false);
+    video.addEventListener('play', onPlay);
+    video.addEventListener('pause', onPause);
+
+    /* save battery/GPU when the tab is hidden */
     const onVisibility = () => {
       if (document.hidden) {
         video.pause();
       } else if (!video.dataset.userPaused) {
-        video.playbackRate = 0.75;
-        const p = video.play();
-        if (p && p.catch) p.catch(() => {});
+        tryPlay();
       }
     };
     document.addEventListener('visibilitychange', onVisibility);
-    return () => document.removeEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      window.removeEventListener('touchstart', onFirstInput);
+      window.removeEventListener('pointerdown', onFirstInput);
+      video.removeEventListener('play', onPlay);
+      video.removeEventListener('pause', onPause);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, []);
 
   const toggle = () => {
@@ -33,14 +66,12 @@ export default function Background() {
     if (!video) return;
     if (video.paused) {
       delete video.dataset.userPaused;
-      video.playbackRate = 0.75;
+      video.playbackRate = RATE;
       const p = video.play();
       if (p && p.catch) p.catch(() => {});
-      setPlaying(true);
     } else {
       video.dataset.userPaused = '1';
       video.pause();
-      setPlaying(false);
     }
   };
 
@@ -57,6 +88,7 @@ export default function Background() {
         loop
         muted
         playsInline
+        disableRemotePlayback
         aria-hidden="true"
       />
       <div className="video-scrim" aria-hidden="true" />
